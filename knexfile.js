@@ -6,7 +6,7 @@ module.exports = {
     connection: {
       // filename: path.resolve(__dirname, 'src', 'database', 'database.db')
       // usado acima para sempre criar o database no local certo sem ter problema de OS. Aqui ta diferente por conta do databse usado na aula, q é o SQLite, q n é usado na prática e por isso tem mais limitações
-      filename: '/home/larissa/shared/database.db'
+      filename: '/home/larissa/shared/APInotes_database.db'
     },    
     pool: {
       afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb) //no SQLite a funcionalidade de deletar em cascata vem disabilitada, rodando esse função ao roda o knex, habilitar deletar as tags conectadas a uma nota q será deletada.

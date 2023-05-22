@@ -1,8 +1,10 @@
 require("express-async-errors")
+const express = require('express')
+const cors = require('cors')
 
 const migrationsRun = require('./database/sqlite/migrations')
 const AppError = require('./utils/AppError')
-const express = require('express')
+const uploadConfig = require('./configs/upload')
 
 //teacher did this way, lets see if i can just import normally
 
@@ -11,6 +13,8 @@ const routes = require("./routes")
 migrationsRun()
 
 const app = express()
+
+app.use(cors())
 
 //ler sem parâmetro a ser passado, só para ir até a rota pretendida
 // app.get("/message", (request, response) => {
@@ -58,6 +62,8 @@ app.use(express.json())
 // })
 
 //pra funcionar as rotas depois de colocado no index
+
+app.use('/files', express.static(uploadConfig.UPLOADS_FOLDER))
 
 app.use(routes)
 

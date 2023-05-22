@@ -1,7 +1,13 @@
 const { Router } = require("express")
+const multer = require('multer')
+
+const uploadConfig = require('../configs/upload')
 const UsersController = require("../controllers/UsersController")
+const UserAvatarController = require("../controllers/UserAvatarController")
+const ensureAuthenticated = require('../middleware/ensureAuthenticated')
 
 const usersRoutes = Router()
+const upload = multer(uploadConfig.MULTER )
 
 // function myMiddleware(request, response, next) {
 //     const { isAdmin } = request.body
@@ -14,6 +20,7 @@ const usersRoutes = Router()
 // }
 
 const usersController = new UsersController()
+const userAvatarController = new UserAvatarController()
 
 //n é mais necessário deixar /users aqui pq ja tá vindo com a destinação certa no index.js. o / é a raiz da rota que chegou aqui
 // usersRoutes.post("/", (request, response) => {
@@ -33,6 +40,7 @@ const usersController = new UsersController()
 //usersRoutes.post("/", myMiddleware, usersController.create)
 
 usersRoutes.post("/", usersController.create)
-usersRoutes.put('/:id', usersController.update)
+usersRoutes.put('/', ensureAuthenticated, usersController.update)
+usersRoutes.patch('/avatar', ensureAuthenticated, upload.single('avatar'), userAvatarController.update) //carregar a img do usuário
 
 module.exports = usersRoutes

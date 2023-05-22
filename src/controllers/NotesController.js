@@ -1,16 +1,18 @@
 const { response } = require('express')
 const knex = require('../database/knex')
+const AppError = require('../utils/AppError')
 
 class NotesController {
     async create(request, response) {
         const { title, description, tags, links } = request.body
-        const { user_id } = request.params
+        const user_id = request.user.id
+        // const { user_id } = request.params
 
-        const [note_id] = await knex('notes').insert({
+        const [note_id] = await knex('notes').insert({ 
             title,
             description,
             user_id
-        })
+        }) //why note_id are in brakets, because when a note is created the code return a note in the first position of an array, so if is in between brakets it wil be in the positions of the note id.
 
         const linksInsert = links.map(link => {
             return {
@@ -31,13 +33,18 @@ class NotesController {
 
         await knex('tags').insert(tagsInsert)
 
-        response.json()
+        return response.json()
     }
 
     async show(request, response) {
         const { id } = request.params
 
         const note = await knex('notes').where({ id }).first()
+
+        if(!note) {
+            throw new AppError('Nota inexistente.')
+        }
+
         const tags = await knex('tags').where({ note_id: id }).orderBy('name')
         const links = await knex('links').where({ note_id: id }).orderBy('created_at')
 
@@ -57,7 +64,8 @@ class NotesController {
     }
 
     async index(request, response) {
-        const { title, user_id, tags } = request.query
+        const { title, tags } = request.query
+        const user_id = request.user.id
 
         let notes
 
@@ -74,6 +82,7 @@ class NotesController {
                 .whereLike('notes.title', `%${title}%`)
                 .whereIn('name', filterTags)
                 .innerJoin('notes', 'notes.id', 'tags.note_id')
+                .groupBy('notes.id')
                 .orderBy('notes.title')
         } else {
             notes = await knex('notes')
