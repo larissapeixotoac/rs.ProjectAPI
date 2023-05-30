@@ -1,4 +1,6 @@
 require("express-async-errors")
+require('dotenv/config')
+
 const express = require('express')
 const cors = require('cors')
 
@@ -6,7 +8,6 @@ const migrationsRun = require('./database/sqlite/migrations')
 const AppError = require('./utils/AppError')
 const uploadConfig = require('./configs/upload')
 
-//teacher did this way, lets see if i can just import normally
 
 const routes = require("./routes")
 
