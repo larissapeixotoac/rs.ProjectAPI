@@ -9,8 +9,8 @@ async function sqliteConnection() {
         //aqui deve constar um objeto com configs da conexão
 
         //1 - onde que salvar o arq do banco de dados:
-        // filename: path.resolve(__dirname, "../../", "database.db"),
-        filename: '/home/larissa/shared/APInotes_database.db',
+        filename: path.resolve(__dirname, "..", "database.db"),
+        // filename: '/home/larissa/shared/APInotes_database.db',
 
         //__dirname: pega de forma automática onde se encontra
         //"..": volta uma pasta pra trás
