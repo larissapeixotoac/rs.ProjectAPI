@@ -2,6 +2,9 @@ const { hash, compare } = require('bcryptjs')
 const AppError = require("../utils/AppError")
 const sqliteConnection = require('../database/sqlite')
 
+const UserRepository = require('../repositories/UserRepository')
+const UserCreateService = require("../services/UserCreateService")
+
 class UsersController {
     /* 
         index - GET para listar vários registros
@@ -14,17 +17,10 @@ class UsersController {
     async create(request, response) {
         const { name, email, password } = request.body
 
-        const database = await sqliteConnection()
-        //Chegando se há no banco de dados o email pego acima no body. Cada interrogação representa uma variável entre chaves, respectivamente.
-        const checkUserExist = await database.get('SELECT * FROM users WHERE email = (?)', [email])
-
-        if(checkUserExist) {
-            throw new AppError('Este e-mail já está em uso.')
-        }
-
-        const hashedPassword = await hash(password, 8)
-
-        await database.run('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword])
+        const userRepository = new UserRepository()
+        const userCreateService = new UserCreateService(userRepository)      
+        
+        await userCreateService.execute({ name, email, password })  
 
         return response.status(201).json()
     }
